@@ -9,7 +9,7 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	sourceCompatibility = '17'
 }
 
 repositories {
@@ -22,6 +22,8 @@ dependencies {
 	runtimeOnly 'com.mysql:mysql-connector-j'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 	testImplementation 'org.springframework.batch:spring-batch-test'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
@@ -30,10 +32,10 @@ tasks.named('test') {
 
 jib {
 	from {
-		image = "openjdk:21"
+		image = "openjdk:17"
 	}
 	to {
-		image = "{ecr주소}/notification-batch"
+		image = "058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/notification-batch"
 		tags = ['0.0.1']
 	}
 	container {
