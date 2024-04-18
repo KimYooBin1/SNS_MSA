@@ -19,6 +19,8 @@ repositories {
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
     implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
     runtimeOnly 'com.mysql:mysql-connector-j'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
 }
@@ -33,7 +35,7 @@ jib {
     }
     to {
         image = '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server'
-        tags = ['0.0.2']
+        tags = ['0.0.3']
     }
     container {
         creationTime = 'USE_CURRENT_TIMESTAMP'

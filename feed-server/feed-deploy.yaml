@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: feed-container
-          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.2'
+          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:latest'
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
