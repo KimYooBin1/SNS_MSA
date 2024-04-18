@@ -17,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/api/feeds")
 @RequiredArgsConstructor
 public class SocialFeedController {
-	private SocialFeedService feedService;
+	private final SocialFeedService feedService;
 
 	@GetMapping
 	public List<SocialFeed> getAllFeeds() {
