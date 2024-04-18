@@ -9,7 +9,7 @@ group = 'com.example'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	sourceCompatibility = '21'
+	sourceCompatibility = '17'
 }
 
 repositories {
@@ -20,6 +20,8 @@ dependencies {
 	implementation 'net.coobird:thumbnailator:0.4.20'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	compileOnly 'org.projectlombok:lombok'
+	annotationProcessor 'org.projectlombok:lombok'
 }
 
 tasks.named('test') {
@@ -28,11 +30,11 @@ tasks.named('test') {
 
 jib {
 	from {
-		image = 'openjdk:21'
+		image = 'openjdk:17'
 	}
 	to {
-		image = '{ecr주소}/image-server'
-		tags = ['0.0.1']
+		image = '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/image-server'
+		tags = ['0.0.2']
 	}
 	container {
 		creationTime = 'USE_CURRENT_TIMESTAMP'
