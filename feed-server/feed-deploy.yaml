@@ -7,6 +7,9 @@ spec:
   replicas: 2
   strategy:
     type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
   selector:
     matchLabels:
       app: feed-server
@@ -17,10 +20,12 @@ spec:
     spec:
       containers:
         - name: feed-container
-          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:latest'
+          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.4'
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
+            - name: USER_SERVICE
+              value: http://user-service.sns.svc.cluster.local:8080
           envFrom:
             - configMapRef:
                 name: mysql-config

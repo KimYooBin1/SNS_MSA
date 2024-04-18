@@ -1,6 +1,7 @@
 server:
   shutdown: immediate
-
+sns:
+  user-server: http://user-service.sns.svc.cluster.local:8080
 spring:
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver

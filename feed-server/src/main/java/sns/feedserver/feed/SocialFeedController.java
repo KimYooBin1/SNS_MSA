@@ -1,5 +1,6 @@
 package sns.feedserver.feed;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
@@ -20,8 +21,16 @@ public class SocialFeedController {
 	private final SocialFeedService feedService;
 
 	@GetMapping
-	public List<SocialFeed> getAllFeeds() {
-		return feedService.getAllFeeds();
+	public List<FeedInfo> getAllFeeds() {
+		// TODO : Feed 가 많아지면 성능 문제 발생, pagination?
+		List<SocialFeed> allFeeds = feedService.getAllFeeds();
+		List<FeedInfo> result = new ArrayList<>();
+		for (SocialFeed feed : allFeeds) {
+			UserInfo user = feedService.getUserInfo(feed.getUploaderId());
+			FeedInfo feedInfo = new FeedInfo(feed, user.getUsername());
+			result.add(feedInfo);
+		}
+		return result;
 	}
 
 	@GetMapping("/user/{userId}")
