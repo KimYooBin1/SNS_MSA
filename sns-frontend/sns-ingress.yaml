@@ -1,0 +1,58 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: sns-ingress
+  namespace: sns
+  # aws Load Balancer 에게 제공하는 정보
+  annotations:
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+spec:
+  #Aws Load Balancer
+  ingressClassName: 'alb'
+  defaultBackend:   #주소를 잘못 적거나 아래에서 지정하지 않은 role에 대해서 들어올때 ex) demain 주소만 치고 들어왔을때
+    service:
+      name: sns-frontend-service
+      port:
+        number: 3000
+  #들어오는 입력에 대해서 어디로 보낼지
+  rules:
+    - http:
+        paths:
+          - path: /api/timeline
+            pathType: Prefix
+            backend:
+              service:
+                name: timeline-service
+                port:
+                  number: 8080
+          - path: /api/feeds
+            pathType: Prefix
+            backend:
+              service:
+                name: feed-service
+                port:
+                  number: 8080
+          - path: /api/users
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8080
+          - path: /api/follows
+            pathType: Prefix
+            backend:
+              service:
+                name: user-service
+                port:
+                  number: 8080
+          - path: /api/images
+            pathType: Prefix
+            backend:
+              service:
+                name: image-service
+                port:
+                  number: 8080
+
+
