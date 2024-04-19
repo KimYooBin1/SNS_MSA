@@ -2,10 +2,10 @@ import http from 'k6/http';
 import { sleep } from 'k6';
 
 export const options = {
-  vus: 10,
-  duration: '30s',
+  vus: 100,
+  duration: '15s',
 };
 
 export default function() {
-  http.get('http://feed-service.sns.svc.cluster.local:8080/api/feeds');
+  http.get('http://timeline-service.sns.svc.cluster.local:8080/api/timeline');
 }

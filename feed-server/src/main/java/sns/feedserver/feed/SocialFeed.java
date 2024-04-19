@@ -1,16 +1,18 @@
 package sns.feedserver.feed;
 
 import static jakarta.persistence.GenerationType.*;
-import static java.time.LocalDateTime.*;
+import static java.time.ZonedDateTime.*;
 import static lombok.AccessLevel.*;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
+import jakarta.persistence.Temporal;
+import jakarta.persistence.TemporalType;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -28,7 +30,8 @@ public class SocialFeed {
 
 	private int uploaderId;
 
-	private LocalDateTime uploadDatetime;
+	@Temporal(TemporalType.TIMESTAMP)
+	private ZonedDateTime uploadDatetime;
 
 	private String contents;
 

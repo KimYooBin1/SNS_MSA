@@ -1,6 +1,6 @@
 package sns.feedserver.feed;
 
-import java.time.LocalDateTime;
+import java.time.ZonedDateTime;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -12,7 +12,7 @@ public class FeedInfo {
 	private String imageId;
 	private int uploaderId;
 	private String uploaderName;
-	private LocalDateTime uploadDatetime;
+	private ZonedDateTime uploadDatetime;
 	private String contents;
 
 	public FeedInfo(SocialFeed feed, String uploaderName) {
