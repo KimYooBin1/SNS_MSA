@@ -27,6 +27,7 @@ public class Follow {
 	//팔로우 하는 유저
 	private int followerId;
 	private LocalDateTime followDatetime;
+	private LocalDateTime mailSentDatetime;
 
 	public Follow(int userId, int followerId) {
 		this.userId = userId;

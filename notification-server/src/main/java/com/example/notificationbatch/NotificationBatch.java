@@ -45,7 +45,7 @@ public class NotificationBatch {
 		return items -> {
 			for (NotificationInfo item : items) {
 				SimpleMailMessage message = new SimpleMailMessage();
-				message.setFrom("kyb1208tg@google.com");
+				message.setFrom("kyb1208tg@gmail.com");
 				message.setTo(item.getEmail());
 				message.setSubject("New Follower!");
 				message.setText(
