@@ -47,6 +47,12 @@ public class SocialFeedController {
 		return ResponseEntity.ok(feed);
 	}
 
+	@GetMapping("/refresh")
+	public ResponseEntity<?> refreshFeed(){
+		feedService.refreshAllFeeds();
+		return ResponseEntity.ok().build();
+	}
+
 	@DeleteMapping("/{id}")
 	public ResponseEntity<?> deleteFeed(@PathVariable int id) {
 		feedService.deleteFeed(id);

@@ -20,7 +20,7 @@ spec:
     spec:
       containers:
         - name: feed-container
-          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.4'
+          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/feed-server:0.0.5'
           env:
             - name: SPRING_PROFILES_ACTIVE
               value: dev
@@ -31,10 +31,14 @@ spec:
                 name: mysql-config
             - secretRef:
                 name: mysql-secret
+            - configMapRef:
+                name: kafka-config
+            - secretRef:
+                name: kafka-secret
           resources:
             requests:
               memory: "512Mi"
-              cpu: "500m"
+              cpu: "250m"
             limits:
               memory: "1Gi"
               cpu: "1000m"

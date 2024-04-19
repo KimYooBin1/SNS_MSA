@@ -3,10 +3,15 @@ package sns.feedserver.feed;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.json.JsonParseException;
 import org.springframework.http.HttpStatusCode;
+import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestClient;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 @Transactional(readOnly = true)
 public class SocialFeedService {
 	private final SocialFeedRepository feedRepository;
+	private final KafkaTemplate<String, String> kafkaTemplate;
+	private final ObjectMapper objectMapper;
 
 	@Value("${sns.user-server}")
 	private String userServerUrl;
@@ -38,7 +45,29 @@ public class SocialFeedService {
 
 	@Transactional
 	public SocialFeed createFeed(FeedRequest feed){
-		return feedRepository.save(new SocialFeed(feed));
+		SocialFeed savedFeed = feedRepository.save(new SocialFeed(feed));
+		UserInfo uploader = getUserInfo(savedFeed.getUploaderId());
+		// kafka 적용
+		FeedInfo feedInfo = new FeedInfo(savedFeed, uploader.getUsername());
+		try{
+			kafkaTemplate.send("feed.created", objectMapper.writeValueAsString(feedInfo));
+		} catch (JsonProcessingException e) {
+			throw new RuntimeException(e);
+		}
+		return savedFeed;
+	}
+
+	public void refreshAllFeeds(){
+		List<SocialFeed> feeds = getAllFeeds();
+		for (SocialFeed feed : feeds) {
+			UserInfo uploader = getUserInfo(feed.getUploaderId());
+			FeedInfo feedInfo = new FeedInfo(feed, uploader.getUsername());
+			try {
+				kafkaTemplate.send("feed.created", objectMapper.writeValueAsString(feedInfo));
+			} catch (JsonProcessingException e) {
+				throw new RuntimeException(e);
+			}
+		}
 	}
 
 	// Feed Server 에서 User Server 호출
