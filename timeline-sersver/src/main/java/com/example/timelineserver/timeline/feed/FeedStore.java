@@ -1,5 +1,6 @@
 package com.example.timelineserver.timeline.feed;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.data.redis.connection.StringRedisConnection;
 import org.springframework.data.redis.core.RedisCallback;
@@ -9,6 +10,7 @@ import org.springframework.stereotype.Component;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 @Component
 public class FeedStore {
@@ -22,17 +24,39 @@ public class FeedStore {
     }
 
     public void savePost(FeedInfo post) {
-
+        // redis 에서 정렬이 가능한 자료구조 ZSet
+        try {
+            redis.opsForZSet()
+                .add("feed: " + post.getUploaderId(), objectMapper.writeValueAsString(post),
+                    post.getUploadDatetime().toEpochSecond());
+            redis.opsForZSet()
+                .add("feed:all", objectMapper.writeValueAsString(post),
+                    post.getUploadDatetime().toEpochSecond());
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     public List<FeedInfo> allFeed() {
-
-        return List.of();
+        Set<String> savedFeed = redis.opsForZSet().reverseRange("feed:all", 0, -1);
+        return savedFeed.stream().map(feed -> {
+            try {
+                return objectMapper.readValue(feed, FeedInfo.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
     }
 
     public List<FeedInfo> listFeed(String userId) {
-
-        return List.of();
+        Set<String> savedFeed = redis.opsForZSet().reverseRange("feed: " + userId, 0, -1);
+        return savedFeed.stream().map(feed -> {
+            try {
+                return objectMapper.readValue(feed, FeedInfo.class);
+            } catch (JsonProcessingException e) {
+                throw new RuntimeException(e);
+            }
+        }).toList();
     }
 
     public Long likePost(int userId, int postId) {
