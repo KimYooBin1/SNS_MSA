@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Values.appName }}
+spec:
+  replicas: {{ .Values.replicas }}
+  strategy:
+    type: RollingUpdate
+    rollingUpdate:
+      maxSurge: 1
+      maxUnavailable: 1
+  selector:
+    matchLabels:
+      app: {{ .Values.appName }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.appName }}
+    spec:
+      {{- if .Values.persistence.enabled }}
+      volumes:
+        - name: {{ .Values.appName }}-volume
+          persistentVolumeClaim:
+            claimName: {{ .Values.appName }}-claim
+      {{- end }}
+      containers:
+        - name: {{ .Values.replicas}}-container
+          image: '058264535568.dkr.ecr.ap-northeast-2.amazonaws.com/{{ .Values.appName }}:{{ .Values.imageTag }}'
+          {{- if .Values.persistence }}
+          volumeMounts:
+            - mountPath: {{ .Values.persistence.mountPath }}
+              name: {{ .Values.appName }}-volume
+          {{- end }}
+          env:
+            - name: SPRING_PROFILES_ACTIVE
+              value: {{ .Values.profile }}
+            {{- with.Values.envs }}
+            {{- toYaml . | nindent 12 }}
+            {{- end}}
+          {{- if .Values.configs }}
+          envFrom:
+            {{- range .Values.configs}}
+            - configMapRef:
+                name: {{ . | trimSuffix "-nosecret" }}-config
+            {{- if not (hasSuffix "-nosecret" .)}}
+            - secretRef:
+                name: {{ . }}-secret
+            {{- end}}
+            {{- end}}
+          {{- end}}
+          resources:
+            requests:
+              memory: {{ .Values.resources.memory.requests }}
+              cpu: {{ .Values.resources.cpu.requests }}
+            limits:
+              memory: {{ .Values.resources.memory.limits }}
+              cpu: {{ .Values.resources.cpu.limits }}
+          lifecycle:
+            preStop:
+              exec:
+                command: ["/bin/sh", "-c", "sleep 10"]
+          {{- if .Values.probe }}
+          {{- with .Values.probe.readiness }}
+          readinessProbe:
+            httpGet:
+              path: {{ .path }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelay }}
+            periodSeconds: {{ .period }}
+            failureThreshold: {{ .failure }}
+          {{- end }}
+          {{- with .Values.probe.liveness }}
+          livenessProbe:
+            httpGet:
+              path: {{ .path }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelay }}
+            periodSeconds: {{ .period }}
+            failureThreshold: {{ .failure }}
+          {{- end }}
+          {{- with .Values.probe.startup }}
+          startupProbe:
+            httpGet:
+              path: {{ .path }}
+              port: {{ .port }}
+            initialDelaySeconds: {{ .initialDelay }}
+            periodSeconds: {{ .period }}
+            failureThreshold: {{ .failure }}
+          {{- end }}
+          {{- end }}

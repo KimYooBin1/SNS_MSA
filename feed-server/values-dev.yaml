@@ -1,0 +1,10 @@
+appName: feed-server
+replicas: 2
+imageTag: 0.0.6
+profile: dev
+envs:
+  - name: USER_SERVICE
+    value: http://user-server.sns.svc.cluster.local:8080
+configs:
+- kafka
+- mysql

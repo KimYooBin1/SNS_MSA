@@ -1,0 +1,19 @@
+{{- if .Values.persistence.enabled }}
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  name: {{ .Values.appName }}-claim
+spec:
+  accessModes:
+    {{- if .Values.persistence.accessModes }}
+    {{- range .Values.persistence.accessModes}}
+    - {{ . }}
+    {{- end }}
+    {{- else }}
+    - ReadWriteMany
+    {{- end}}
+  storageClassName: {{ .Values.persistence.storageClass | default "efs-sc"}}
+  resources:
+    requests:
+      storage: {{ .Values.persistence.storageRequest | default "5Gi"}}
+  {{- end }}

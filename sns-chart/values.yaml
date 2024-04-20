@@ -1,0 +1,29 @@
+appName: server
+replicas: 1
+imageTag: 0.0.1
+profile: dev
+envs: []
+configs: []
+resources:
+  memory:
+    requests: "250Mi"
+    limits: "1Gi"
+  cpu:
+    requests: "250m"
+    limits: "1000m"
+probe:
+  readiness:
+    path: /healthcheck/ready
+    port: 8080
+    initialDelay: 30
+    period: 1
+    failure: 3
+  liveness:
+    path: /healthcheck/live
+    port: 8080
+    initialDelay: 30
+    period: 1
+    failure: 10
+persistence:
+  enabled: false
+
