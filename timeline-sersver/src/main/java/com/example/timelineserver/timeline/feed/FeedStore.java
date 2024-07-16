@@ -74,5 +74,25 @@ public class FeedStore {
     public Long countLikes(int postId) {
         return redis.opsForSet().size("likes:" + postId);
     }
+    
+    public Map<Integer, Long> countLikes(List<Integer> postIds) {
+        Map<Integer, Long> likesMap = new HashMap<>();
 
+        List<Object> results = redis.executePipelined((RedisCallback<Object>) connection -> {
+            StringRedisConnection stringRedisConn = (StringRedisConnection) connection;
+
+            for (int postId : postIds) {
+                stringRedisConn.sCard("likes:" + postId);
+            }
+            return null;
+        });
+
+        int index = 0;
+        for (int postId : postIds) {
+            Long likeCount = (Long) results.get(index++); // Get the result from the results list
+            likesMap.put(postId, likeCount);
+        }
+
+        return likesMap;
+    }
 }
